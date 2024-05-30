@@ -193,9 +193,15 @@
                         productsCell.textContent = productsList;
                         row.appendChild(productsCell);
 
-                        const modifiedCell = document.createElement('td');
-                        modifiedCell.textContent = item.Modified || '';
-                        row.appendChild(modifiedCell);
+                    const modifiedCell = document.createElement('td');
+                    if (item.Modified) {
+                        const date = new Date(item.Modified);
+                        const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                        modifiedCell.textContent = formattedDate;
+                    } else {
+                        modifiedCell.textContent = '';
+                    }
+                    row.appendChild(modifiedCell);
 
                         const titleCell3 = document.createElement('td');
                         titleCell3.textContent = item.field_6 || '';
