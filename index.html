@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ב</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        .tablelist {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 1200px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .company-group {
+            background-color: #333;
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 1200px) {
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            th, td {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            th, td {
+                padding: 6px;
+                font-size: 12px;
+            }
+        }
+        .company-group {
+    background-color: #333;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: right;
+}
+    </style>
+</head>
+<body>
+    <h1>כנס מיקרוסופט 2024</h1>
+    <div class="tablelist">
+    <table id="dataTable" dir="rtl">
+        <thead>
+            <tr>
+                <th>איש קשר</th>
+                <th>Company</th>
+                <th>Job Title</th>
+                <th>עיסוק חברה</th>
+                <th>מוצרים שיש ללקוח</th>
+                <th>Platform</th>
+                <th>מעוניין ב</th>
+                <th>Modified</th>
+                <th>הערות</th>
+                <th>מחלקה</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+    <script>
+        // Fetch data from the API using POST method
+        fetch('https://prod-58.westeurope.logic.azure.com:443/workflows/b6ea3128618f49ceaa304488cee6a69a/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CM1SRrV4MkTi5zdLBZdG_4lv-iqlfC1WS7Kr1taGnJI', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ /* any data you need to send to the API */ })
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Get the table body element
+                const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+
+                // Group data by company
+                const groupedData = data.reduce((groups, item) => {
+                    const company = item.field_1 || 'Unknown';
+                    if (!groups[company]) {
+                        groups[company] = [];
+                    }
+                    groups[company].push(item);
+                    return groups;
+                }, {});
+
+                // Loop through each company group and create rows
+                Object.keys(groupedData).forEach(company => {
+                    // Create a group header row
+                    const groupHeader = document.createElement('tr');
+                    const groupHeaderCell = document.createElement('td');
+                    groupHeaderCell.colSpan = 10;
+                    groupHeaderCell.textContent = `חברה: ${company}`;
+                    groupHeaderCell.classList.add('company-group');
+                    groupHeader.appendChild(groupHeaderCell);
+                    tableBody.appendChild(groupHeader);
+
+                    // Create rows for each item in the group
+                    groupedData[company].forEach(item => {
+                        const row = document.createElement('tr');
+
+                        const titleCell = document.createElement('td');
+                        titleCell.textContent = item.Title || '';
+                        row.appendChild(titleCell);
+                        
+                   
+
+                        const companyCell = document.createElement('td');
+                        companyCell.textContent = item.field_1 || '';
+                        row.appendChild(companyCell);
+
+                        const jobTitleCell = document.createElement('td');
+                        jobTitleCell.textContent = item.field_2 || '';
+                        row.appendChild(jobTitleCell);
+
+                        const areaCell = document.createElement('td');
+                        areaCell.textContent = item.field_4 || '';
+                        row.appendChild(areaCell);
+
+                        const appsCell = document.createElement('td');
+                        const appsList = (item.field_5 || []).map(app => app.Value).join(', ') || '';
+                        appsCell.textContent = appsList;
+                        row.appendChild(appsCell);
+
+                        const platformCell = document.createElement('td');
+                        platformCell.textContent = (item.OData__x05e4__x05dc__x05d8__x05d5__x05 || {}).Value || '';
+                        row.appendChild(platformCell);
+
+                        const productsCell = document.createElement('td');
+                        const productsList = (item.OData__x05de__x05d5__x05e6__x05e8__x05 || []).map(product => product.Value).join(', ') || '';
+                        productsCell.textContent = productsList;
+                        row.appendChild(productsCell);
+
+                        const modifiedCell = document.createElement('td');
+                        modifiedCell.textContent = item.Modified || '';
+                        row.appendChild(modifiedCell);
+
+                        const titleCell3 = document.createElement('td');
+                        titleCell3.textContent = item.field_6 || '';
+                        row.appendChild(titleCell3); 
+
+                        const titleCell2 = document.createElement('td');
+                        titleCell2.textContent = item.field_3 || '';
+                        row.appendChild(titleCell2);  
+
+                        tableBody.appendChild(row);
+                    });
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+</body>
+</html>
